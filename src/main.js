@@ -1,6 +1,6 @@
 import { scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
-import { displayDialogue } from "./utils";
+import { displayDialogue, setCamScale } from "./utils";
 
 k.loadSprite("spritesheet", "./spritesheet.png", {
   sliceX: 39,
@@ -87,6 +87,12 @@ k.scene("main", async () => {
     }
   }
 
+  setCamScale(k);
+
+  k.onResize(() => {
+    setCamScale(k)
+  })
+
   // config cam movement
   k.onUpdate(() => {
     k.camPos(player.pos.x, player.pos.y + 100);
@@ -98,6 +104,8 @@ k.scene("main", async () => {
     // Set player movements when they click/tap
     const worldMousePos = k.toWorld(k.mousePos());
     player.moveTo(worldMousePos, player.speed)
+
+    
   })
 });
 

@@ -1,3 +1,5 @@
+import { k } from "./kaboomCtx";
+
 export function displayDialogue(text, onDisplayEnd) {
   const dialogueUI = document.getElementById("textbox-container");
   const dialogue = document.getElementById("dialogue");
@@ -28,4 +30,15 @@ export function displayDialogue(text, onDisplayEnd) {
   }
 
   closeBtn.addEventListener("click", onCloseBtnClick);
+}
+
+export function setCamScale(context) {
+  const resizeFactor = k.width() / k.height();
+
+  if (resizeFactor < 1) {
+    k.camScale(k.vec2(1));
+    return;
+  }
+
+  k.camScale(k.vec2(1.5));
 }
