@@ -90,6 +90,14 @@ k.scene("main", async () => {
   // config cam movement
   k.onUpdate(() => {
     k.camPos(player.pos.x, player.pos.y + 100);
+  });
+
+  k.onMouseDown((mouseBtn) => {
+    if (mouseBtn !== "left" || player.isInDialogue) return;
+
+    // Set player movements when they click/tap
+    const worldMousePos = k.toWorld(k.mousePos());
+    player.moveTo(worldMousePos, player.speed)
   })
 });
 
