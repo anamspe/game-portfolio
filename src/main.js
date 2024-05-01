@@ -28,7 +28,9 @@ k.scene("main", async () => {
   const map = k.add([k.sprite("map"), k.pos(0), k.scale(scaleFactor)]);
 
   // create player and set starting animation
-  const player = k.make([k.sprite("spritesheet", { anim: "idle-down" }), k.area({
+  const player = k.make([
+    k.sprite("spritesheet", { anim: "idle-down" }), 
+    k.area({
     // control shape of the hitbox
     shape: new k.Rect(k.vec2(0, 3), 10, 10),
   }),
@@ -66,7 +68,7 @@ k.scene("main", async () => {
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             player.isInDialogue = true;
-            displayDialogue("TODO", () => player.isInDialogue = false);            
+            displayDialogue("TODO", () => player.isInDialogue = false);
           });
         }
       }
@@ -90,8 +92,8 @@ k.scene("main", async () => {
   setCamScale(k);
 
   k.onResize(() => {
-    setCamScale(k)
-  })
+    setCamScale(k);
+  });
 
   // config cam movement
   k.onUpdate(() => {
@@ -103,10 +105,66 @@ k.scene("main", async () => {
 
     // Set player movements when they click/tap
     const worldMousePos = k.toWorld(k.mousePos());
-    player.moveTo(worldMousePos, player.speed)
+    player.moveTo(worldMousePos, player.speed);
 
-    
-  })
+    const mouseAngle = player.pos.angle(worldMousePos);
+
+    const lowerBound = 50;
+    const upperBound = 125;
+
+    // logic for walking up animation
+    if (
+      mouseAngle > lowerBound &&
+      mouseAngle < upperBound &&
+      player.curAnim() !== "walk-up"
+    ) {
+      player.play("walk-up");
+      player.direction = "up";
+      return;
+    }
+
+    // logic for walking down animation
+    if (
+      mouseAngle < -lowerBound &&
+      mouseAngle > -upperBound &&
+      player.curAnim() !== "walk-down"
+    ) {
+      player.play("walk-down");
+      player.direction = "down";
+      return;
+    }
+
+    //logic for walking left
+    if (Math.abs(mouseAngle) < lowerBound) {
+      player.flipX = true; // flip character used for side walking - it looks right originally
+      if (player.curAnim() !== "walk-side") player.play("walk-side");
+      player.direction = "left";
+      return;
+    }
+
+    //logic for walking right
+    if (Math.abs(mouseAngle) > upperBound) {
+      player.flipX = false; // flip character to right side as initial in case it's flipped - in case user moved to the left
+      if (player.curAnim() !== "walk-side") player.play("walk-side");
+      player.direction = "right";
+      return;
+    }
+
+  });
+
+
+  k.onMouseRelease(() => {
+    if (player.direction === "down") {
+      player.play("idle-down");
+      return;
+    }
+    if (player.direction === "up") {
+      player.play("idle-up");
+      return;
+    }
+
+    player.play("idle-side");
+  });
 });
 
 k.go("main");
